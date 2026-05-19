@@ -65,32 +65,43 @@ export const playHover = () => {
   playPianoNote(ctx, 392.00, 0.8, 0.2); // G4
 };
 
-// Very short, ethereal chime for scrolling to feel pleasant and non-intrusive
+// Ultra-pleasant ambient pad sound for scrolling
 export const playTick = () => {
   const ctx = getAudioContext();
   if (!ctx) return;
   if (ctx.state === "suspended") ctx.resume();
 
-  // Create an ethereal chime sound
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = "sine";
-  // Randomize the frequency slightly to create a shimmering effect when scrolling
-  const baseFreq = 880; // A5
-  const freq = baseFreq + (Math.random() * 50 - 25);
-  osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-  // Envelope: gentle attack, soft decay
-  gain.gain.setValueAtTime(0, ctx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 0.05); // Very quiet, slow attack
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4); // Long decay
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start(ctx.currentTime);
-  osc.stop(ctx.currentTime + 0.4);
+  // We will play a very soft major 7th chord (Cmaj7) shifted down a bit
+  const baseFreq = 261.63; // C4
+  const freqs = [baseFreq, baseFreq * 1.25, baseFreq * 1.5, baseFreq * 1.875]; // C E G B
   
-  if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(2);
+  const masterGain = ctx.createGain();
+  // Very slow attack, very long release for a smooth pad feel
+  masterGain.gain.setValueAtTime(0, ctx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0.015, ctx.currentTime + 0.1);
+  masterGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  // Filter sweep
+  filter.frequency.setValueAtTime(400, ctx.currentTime);
+  filter.frequency.linearRampToValueAtTime(1200, ctx.currentTime + 0.2);
+  filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.8);
+  filter.Q.value = 1;
+
+  freqs.forEach(f => {
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    // Slight detune for each scroll event
+    osc.frequency.setValueAtTime(f + (Math.random() * 4 - 2), ctx.currentTime);
+    osc.connect(filter);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.8);
+  });
+
+  filter.connect(masterGain);
+  masterGain.connect(ctx.destination);
+  
+  // Vibrate extremely softly
+  if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(1);
 };
