@@ -65,14 +65,32 @@ export const playHover = () => {
   playPianoNote(ctx, 392.00, 0.8, 0.2); // G4
 };
 
-// Very short, subtle piano note for scrolling (e.g., G5 - 783.99Hz)
+// Very short, ethereal chime for scrolling to feel pleasant and non-intrusive
 export const playTick = () => {
   const ctx = getAudioContext();
   if (!ctx) return;
   if (ctx.state === "suspended") ctx.resume();
 
-  // Very short duration and low gain for scrolling so it's not overwhelming
-  playPianoNote(ctx, 783.99, 0.15, 0.05); // G5
+  // Create an ethereal chime sound
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = "sine";
+  // Randomize the frequency slightly to create a shimmering effect when scrolling
+  const baseFreq = 880; // A5
+  const freq = baseFreq + (Math.random() * 50 - 25);
+  osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+  // Envelope: gentle attack, soft decay
+  gain.gain.setValueAtTime(0, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 0.05); // Very quiet, slow attack
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4); // Long decay
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.4);
   
-  if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(5);
+  if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(2);
 };
