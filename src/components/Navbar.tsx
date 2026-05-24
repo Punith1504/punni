@@ -25,6 +25,7 @@ export default function Navbar() {
               src="/portrait.png" 
               alt="PUNNI Logo" 
               fill 
+              priority
               className="object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" 
             />
           </div>
@@ -35,6 +36,7 @@ export default function Navbar() {
       <div className="pointer-events-auto hidden md:flex items-center gap-10">
         <a 
           href="#craft" 
+          aria-label="View our Craft and Engineering Tiers"
           className="text-lg tracking-widest text-chalk hover:text-white transition-colors drop-shadow"
           onMouseEnter={playHover}
           onClick={playClick}
@@ -43,6 +45,7 @@ export default function Navbar() {
         </a>
         <a 
           href="#contact" 
+          aria-label="Initiate a project request"
           className="px-8 py-3 rounded-full liquid-glass text-lg tracking-widest text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95 drop-shadow"
           onMouseEnter={playHover}
           onClick={playClick}

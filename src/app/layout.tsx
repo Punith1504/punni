@@ -9,8 +9,36 @@ const typewriter = Special_Elite({
 });
 
 export const metadata: Metadata = {
-  title: "PUNNI | Custom Crafted",
-  description: "Elite, handcrafted digital product studio.",
+  metadataBase: new URL("https://punni.vercel.app"),
+  title: "PUNNI Studio | Custom Crafted Digital Products",
+  description: "Elite, handcrafted digital product studio specializing in high-performance web applications, AI integration, and premium UI/UX design.",
+  keywords: "digital agency, web development, UI/UX design, Next.js, AI integration, custom software",
+  authors: [{ name: "PUNNI Studio" }],
+  openGraph: {
+    title: "PUNNI Studio | Custom Crafted Digital Products",
+    description: "Elite, handcrafted digital product studio specializing in high-performance web applications, AI integration, and premium UI/UX design.",
+    url: "https://punni.vercel.app",
+    siteName: "PUNNI Studio",
+    images: [
+      {
+        url: "/portrait.png",
+        width: 800,
+        height: 600,
+        alt: "PUNNI Studio Hero Image",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PUNNI Studio | Custom Crafted Digital Products",
+    description: "Elite, handcrafted digital product studio specializing in high-performance web applications.",
+    images: ["/portrait.png"],
+  },
+  alternates: {
+    canonical: "https://punni.vercel.app",
+  },
 };
 
 import ChatWidget from "@/components/ChatWidget";

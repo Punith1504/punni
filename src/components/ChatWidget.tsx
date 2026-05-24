@@ -104,7 +104,7 @@ export default function ChatWidget() {
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3" aria-live="polite">
               {messages.map((msg) => (
                 <div 
                   key={msg.id} 
@@ -162,6 +162,7 @@ export default function ChatWidget() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close chat widget" : "Open chat widget"}
         className="w-14 h-14 bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center justify-center hover:bg-gray-200 transition-colors"
       >
         {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
