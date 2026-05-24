@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Punni — On-Demand Software Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #1f1f1f;
+      --text: #f0ece4;
+      --muted: #6b6560;
+      --accent: #E8FF47;
+      --accent2: #FF5C3A;
+      --accent3: #3AFFB8;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+      mix-blend-mode: difference;
+    }
+
+    .cursor-ring {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.1s ease;
+      mix-blend-mode: difference;
+      opacity: 0.5;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    nav.scrolled {
+      border-color: var(--border);
+      background: rgba(8, 8, 8, 0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #080808;
+      padding: 10px 22px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: none;
+      cursor: none;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .nav-cta:hover {
+      opacity: 0.85;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(232, 255, 71, 0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-glow2 {
+      position: absolute;
+      bottom: -100px;
+      left: 200px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 92, 58, 0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-tag span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(72px, 12vw, 160px);
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.35s forwards;
+    }
+
+    .hero-title em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 48px;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+
+    .hero-sub {
+      max-width: 420px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .hero-sub strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+    }
+
+    .stat-item {
+      text-align: right;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-num span {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeIn 1s 1s forwards;
+    }
+
+    .hero-scroll span {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: scrollDrop 1.5s ease infinite;
+    }
+
+    @keyframes scrollDrop {
+      0% {
+        transform: scaleY(0);
+        transform-origin: top;
+      }
+
+      50% {
+        transform: scaleY(1);
+        transform-origin: top;
+      }
+
+      51% {
+        transform: scaleY(1);
+        transform-origin: bottom;
+      }
+
+      100% {
+        transform: scaleY(0);
+        transform-origin: bottom;
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* MARQUEE */
+    .marquee-strip {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      background: var(--surface);
+    }
+
+    .marquee-inner {
+      display: inline-flex;
+      animation: marquee 20s linear infinite;
+    }
+
+    .marquee-inner span {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 32px;
+    }
+
+    .marquee-inner span.accent {
+      color: var(--accent);
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* SECTION SHARED */
+    section {
+      padding: 120px 48px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h2.section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    h2.section-title em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    /* ABOUT */
+    .about {
+      border-top: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      margin-top: 64px;
+    }
+
+    .about-text {
+      font-size: 19px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .about-text strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .about-right {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      padding-top: 8px;
+    }
+
+    .about-item {
+      padding: 24px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .about-item:hover {
+      border-color: var(--accent);
+    }
+
+    .about-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .about-item-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .about-item h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .about-item p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* SERVICES / PRICING */
+    .services {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    .pricing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 64px;
+    }
+
+    .pricing-note {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 280px;
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .plan-card {
+      background: var(--bg);
+      padding: 40px 36px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .plan-card.featured {
+      background: var(--text);
+      color: #080808;
+    }
+
+    .plan-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      background: var(--accent);
+      color: #080808;
+      margin-bottom: 28px;
+    }
+
+    .plan-badge.dark {
+      background: #080808;
+      color: var(--accent);
+    }
+
+    .plan-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+
+    .plan-card.featured .plan-name {
+      color: #444;
+    }
+
+    .plan-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .plan-price sup {
+      font-size: 22px;
+      font-weight: 600;
+      vertical-align: top;
+      margin-top: 10px;
+      display: inline-block;
+    }
+
+    .plan-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .plan-card.featured .plan-sub {
+      color: #888;
+    }
+
+    .plan-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 28px;
+    }
+
+    .plan-card.featured .plan-divider {
+      background: #ddd;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .plan-features li {
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .plan-card.featured .plan-features li {
+      color: #555;
+    }
+
+    .plan-features li::before {
+      content: '→';
+      color: var(--accent);
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .plan-card.featured .plan-features li::before {
+      color: #080808;
+    }
+
+    .plan-btn {
+      display: block;
+      text-align: center;
+      padding: 14px 24px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: all 0.25s;
+    }
+
+    .plan-btn:hover {
+      background: var(--accent);
+      color: #080808;
+      border-color: var(--accent);
+    }
+
+    .plan-card.featured .plan-btn {
+      background: #080808;
+      color: var(--text);
+      border-color: #080808;
+    }
+
+    .plan-card.featured .plan-btn:hover {
+      background: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    /* MVP SECTION */
+    .mvp {
+      border-top: 1px solid var(--border);
+    }
+
+    .mvp-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+      margin-top: 64px;
+    }
+
+    .mvp-left {}
+
+    .mvp-desc {
+      font-size: 17px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 24px;
+      margin-bottom: 40px;
+    }
+
+    .mvp-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .mvp-complexity {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .complexity-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--surface);
+      make it load border-left: 3px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .complexity-row:hover {
+      border-color: var(--accent);
+    }
+
+    .complexity-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .complexity-range {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .complexity-examples {
+      font-size: 12px;
+      color: var(--muted);
+      max-width: 300px;
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    .mvp-right {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 40px;
+    }
+
+    .mvp-right h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .mvp-right p {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .process-step {
+      display: flex;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .process-step:last-child {
+      border-bottom: none;
+    }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      min-width: 32px;
+      padding-top: 2px;
+    }
+
+    .step-content h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* STACK */
+    .stack {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    .stack-inner {
+      display: flex;
+      align-items: center;
+      gap: 80px;
+      margin-top: 48px;
+    }
+
+    .stack-lead {
+      font-size: 19px;
+      color: var(--muted);
+      max-width: 300px;
+      line-height: 1.6;
+      flex-shrink: 0;
+    }
+
+    .stack-lead strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .stack-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stack-tag {
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: all 0.25s;
+      color: var(--muted);
+    }
+
+    .stack-tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* CTA */
+    .cta {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding: 120px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(232, 255, 71, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .cta h2 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+
+    .cta p {
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 48px;
+      max-width: 400px;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #080808;
+      padding: 16px 40px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 16px 40px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .footer-logo span {
+      color: var(--accent);
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    /* REVEAL ANIMATION */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav {
+        padding: 16px 24px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      section {
+        padding: 80px 24px;
+      }
+
+      .hero {
+        padding: 0 24px 60px;
+      }
+
+      .hero-bottom {
+        flex-direction: column;
+        gap: 40px;
+        align-items: flex-start;
+      }
+
+      .hero-stats {
+        flex-direction: row;
+        gap: 32px;
+      }
+
+      .stat-item {
+        text-align: left;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .pricing-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .pricing-note {
+        text-align: left;
+      }
+
+      .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .mvp-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .stack-inner {
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      footer {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .cta-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">punni<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#mvp">MVP</a></li>
+      <li><a href="#stack">Stack</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Start a Project</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-noise"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-tag">
+      <span></span> On-Demand Software Studio · Powered by Antigravity
+    </div>
+    <h1 class="hero-title">
+      We Build<br /><em>Software</em><br />That Ships.
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-sub">
+        <strong>Punni</strong> is a bespoke software studio crafting custom digital products for startups, founders, and
+        businesses — from lean MVPs to fully featured platforms.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">3<span>×</span></div>
+          <div class="stat-label">Service Tiers</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">∞<span></span></div>
+          <div class="stat-label">Possibilities</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip">
+    <div class="marquee-inner">
+      <span>Web Apps</span><span class="accent">·</span>
+      <span>Mobile Apps</span><span class="accent">·</span>
+      <span>MVP Development</span><span class="accent">·</span>
+      <span>Landing Pages</span><span class="accent">·</span>
+      <span>SaaS Platforms</span><span class="accent">·</span>
+      <span>E-Commerce</span><span class="accent">·</span>
+      <span>Custom Software</span><span class="accent">·</span>
+      <span>Startup Products</span><span class="accent">·</span>
+      <span>Web Apps</span><span class="accent">·</span>
+      <span>Mobile Apps</span><span class="accent">·</span>
+      <span>MVP Development</span><span class="accent">·</span>
+      <span>Landing Pages</span><span class="accent">·</span>
+      <span>SaaS Platforms</span><span class="accent">·</span>
+      <span>E-Commerce</span><span class="accent">·</span>
+      <span>Custom Software</span><span class="accent">·</span>
+      <span>Startup Products</span><span class="accent">·</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-label">About Punni</div>
+    <div class="about-grid reveal">
+      <div>
+        <h2 class="section-title">Craft over<br /><em>commodity.</em></h2>
+        <p class="about-text" style="margin-top:28px;">
+          We don't do cookie-cutter. <strong>Punni</strong> is a boutique on-demand studio where every product is
+          custom-crafted to fit your vision, your users, and your goals.<br /><br />
+          Built on <strong>Antigravity</strong> — our internal stack and approach that lets us move fast without
+          breaking things. Whether you're a solo founder validating an idea or a business needing a polished digital
+          presence, we bring the same level of care and craft.
+        </p>
+      </div>
+      <div class="about-right">
+        <div class="about-item">
+          <div class="about-item-num">01</div>
+          <h3>Startups & MVPs</h3>
+          <p>Go from idea to live product fast. We scope, design, and build your MVP with a focus on learning quickly
+            and shipping confidently.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-item-num">02</div>
+          <h3>Business Websites</h3>
+          <p>Personal portfolios, company sites, and marketing pages that look and perform like they cost ten times
+            more.</p>
+        </div>
+        <div class="about-item">
+          <div class="about-item-num">03</div>
+          <h3>Custom Software</h3>
+          <p>Have a specific problem? We can build almost any software solution — web, mobile, API, dashboard, tool. If
+            it can be built, we'll build it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="services" id="pricing">
+    <div class="pricing-header reveal">
+      <div>
+        <div class="section-label">Pricing</div>
+        <h2 class="section-title">Simple. Transparent.<br /><em>No surprises.</em></h2>
+      </div>
+      <p class="pricing-note">All prices in Indian Rupees (₹). MVPs are priced separately based on scope & complexity.
+      </p>
+    </div>
+    <div class="plans-grid reveal">
+
+      <!-- Basic -->
+      <div class="plan-card">
+        <div class="plan-badge dark">Basic</div>
+        <div class="plan-name">Basic Webpage</div>
+        <div class="plan-price"><sup>₹</sup>9,999</div>
+        <div class="plan-sub">One-time · Delivery in ~5 days</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Single-page or simple multi-page website</li>
+          <li>Mobile-responsive design</li>
+          <li>Contact form or basic interaction</li>
+          <li>Optimized for speed & SEO basics</li>
+          <li>1 round of revisions included</li>
+          <li>Source code handed over</li>
+        </ul>
+        <a href="#contact" class="plan-btn">Get Started</a>
+      </div>
+
+      <!-- Standard -->
+      <div class="plan-card featured">
+        <div class="plan-badge">Most Popular</div>
+        <div class="plan-name">Standard</div>
+        <div class="plan-price"><sup>₹</sup>25,000</div>
+        <div class="plan-sub">One-time · Delivery in ~10 days</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Multi-page website or web app</li>
+          <li>Custom UI design — no templates</li>
+          <li>CMS integration or dynamic content</li>
+          <li>Advanced animations & interactions</li>
+          <li>Performance & SEO optimized</li>
+          <li>2 rounds of revisions included</li>
+          <li>Deployment support included</li>
+        </ul>
+        <a href="#contact" class="plan-btn">Get Started</a>
+      </div>
+
+      <!-- Premium -->
+      <div class="plan-card">
+        <div class="plan-badge dark">Premium</div>
+        <div class="plan-name">Premium & Applications</div>
+        <div class="plan-price"><sup>₹</sup>50k<span
+            style="font-size:24px;color:var(--accent);font-family:'Syne',sans-serif;font-weight:800">+</span></div>
+        <div class="plan-sub">Starting price · Timeline discussed</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Full-featured web or mobile applications</li>
+          <li>User auth, databases, backend APIs</li>
+          <li>Advanced logic & integrations</li>
+          <li>Admin dashboards & analytics</li>
+          <li>Scalable architecture built-in</li>
+          <li>Unlimited revisions during dev</li>
+          <li>Ongoing support available</li>
+        </ul>
+        <a href="#contact" class="plan-btn">Talk to Us</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MVP -->
+  <section class="mvp" id="mvp">
+    <div class="section-label">MVP Development</div>
+    <div class="mvp-inner">
+      <div class="mvp-left reveal">
+        <h2 class="section-title">Your idea,<br /><em>live & validated.</em></h2>
+        <p class="mvp-desc">
+          MVP pricing is <strong>scoped per project</strong> — because no two startups are the same. We quote based on
+          complexity, not guesswork.
+        </p>
+        <div class="mvp-complexity">
+          <div class="complexity-row">
+            <div>
+              <div class="complexity-label">Simple MVP</div>
+              <div class="complexity-range" style="font-size:12px;margin-top:2px;">Auth + CRUD + Basic UI</div>
+            </div>
+            <div class="complexity-examples">Waitlist apps, simple booking tools, info platforms</div>
+          </div>
+          <div class="complexity-row">
+            <div>
+              <div class="complexity-label">Mid-Tier MVP</div>
+              <div class="complexity-range" style="font-size:12px;margin-top:2px;">Multiple roles, APIs, dashboards
+              </div>
+            </div>
+            <div class="complexity-examples">Marketplaces, SaaS tools, multi-tenant apps</div>
+          </div>
+          <div class="complexity-row">
+            <div>
+              <div class="complexity-label">Complex MVP</div>
+              <div class="complexity-range" style="font-size:12px;margin-top:2px;">AI, payments, real-time, mobile</div>
+            </div>
+            <div class="complexity-examples">Fintech, EdTech, Healthcare, AI-powered platforms</div>
+          </div>
+        </div>
+      </div>
+      <div class="mvp-right reveal">
+        <h3>How we scope your MVP</h3>
+        <p>We follow a structured process to make sure you get exactly what you need — nothing more, nothing less.</p>
+        <div class="process-steps">
+          <div class="process-step">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <h4>Discovery Call</h4>
+              <p>We understand your idea, target users, core use-case, and any constraints you have.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <h4>Scope & Quote</h4>
+              <p>We send a clear breakdown of features, timeline, and a fixed price — no hidden costs.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <h4>Build & Iterate</h4>
+              <p>We build in sprints, share progress regularly, and incorporate your feedback throughout.</p>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">04</div>
+            <div class="step-content">
+              <h4>Ship & Support</h4>
+              <p>We deploy, hand over the codebase, and stay available for post-launch support.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section class="stack" id="stack">
+    <div class="section-label">Technology</div>
+    <div class="stack-inner reveal">
+      <p class="stack-lead">
+        Built on <strong>Antigravity</strong> — our curated modern stack for fast, scalable, high-quality software.
+      </p>
+      <div class="stack-tags">
+        <div class="stack-tag">React</div>
+        <div class="stack-tag">Next.js</div>
+        <div class="stack-tag">React Native</div>
+        <div class="stack-tag">Node.js</div>
+        <div class="stack-tag">TypeScript</div>
+        <div class="stack-tag">PostgreSQL</div>
+        <div class="stack-tag">Supabase</div>
+        <div class="stack-tag">Prisma</div>
+        <div class="stack-tag">Tailwind CSS</div>
+        <div class="stack-tag">Framer Motion</div>
+        <div class="stack-tag">Stripe</div>
+        <div class="stack-tag">Vercel</div>
+        <div class="stack-tag">AWS</div>
+        <div class="stack-tag">OpenAI API</div>
+        <div class="stack-tag">Firebase</div>
+        <div class="stack-tag">Docker</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="contact">
+    <div class="cta-glow"></div>
+    <h2 class="reveal">Let's Build<br /><em>Something.</em></h2>
+    <p class="reveal">Have a project in mind? Tell us about it — we'll get back to you within 24 hours.</p>
+    <div class="cta-actions reveal">
+      <a href="mailto:hello@punni.in" class="btn-primary">Email Us</a>
+      <a href="https://wa.me/" class="btn-secondary">WhatsApp</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">punni<span>.</span></div>
+    <div class="footer-copy">© 2025 Punni Studio. All rights reserved.</div>
+    <div class="footer-links">
+      <a href="#about">About</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#mvp">MVP</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx - 5 + 'px';
+      cursor.style.top = my - 5 + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx - 18 + 'px';
+      ring.style.top = ry - 18 + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'scale(2)';
+        ring.style.transform = 'scale(1.5)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'scale(1)';
+        ring.style.transform = 'scale(1)';
+      });
+    });
+
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => obs.observe(r));
+  </script>
+</body>
+
+</html>
