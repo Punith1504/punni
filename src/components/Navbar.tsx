@@ -15,7 +15,10 @@ export default function Navbar() {
         <div 
           className="flex items-center gap-3 cursor-pointer group"
           onMouseEnter={playHover}
-          onClick={playClick}
+          onClick={() => {
+            playClick();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         >
           <div className="w-12 h-12 rounded-full overflow-hidden liquid-glass relative">
             <Image 
