@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Elite, handcrafted digital product studio.",
 };
 
+import ChatWidget from "@/components/ChatWidget";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,6 +24,7 @@ export default function RootLayout({
     <html lang="en" className={typewriter.variable}>
       <body className="antialiased min-h-screen flex flex-col">
         {children}
+        <ChatWidget />
       </body>
     </html>
   );
