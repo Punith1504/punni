@@ -44,7 +44,7 @@ export default function Home() {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" } },
+    visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: "easeOut" as const } },
   };
 
   return (
