@@ -35,13 +35,22 @@ export default function Navbar() {
       
       <div className="pointer-events-auto hidden md:flex items-center gap-10">
         <a 
-          href="#craft" 
-          aria-label="View our Craft and Engineering Tiers"
+          href="#process" 
+          aria-label="View our process"
           className="text-lg tracking-widest text-chalk hover:text-white transition-colors drop-shadow"
           onMouseEnter={playHover}
           onClick={playClick}
         >
-          Craft
+          Process
+        </a>
+        <a 
+          href="#craft" 
+          aria-label="View our Engineering Tiers"
+          className="text-lg tracking-widest text-chalk hover:text-white transition-colors drop-shadow"
+          onMouseEnter={playHover}
+          onClick={playClick}
+        >
+          Pricing
         </a>
         <a 
           href="#contact" 
