@@ -9,69 +9,48 @@ export default function Navbar() {
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 py-6 px-6 md:px-12 flex items-center justify-between pointer-events-none bg-gradient-to-b from-[#0A0A0A]/80 to-transparent backdrop-blur-sm"
+      className="fixed top-0 left-0 right-0 z-50 py-6 px-10 flex items-center justify-between pointer-events-none"
     >
       <div className="pointer-events-auto">
         <div 
-          className="flex items-center gap-4 cursor-pointer group"
+          className="flex items-center gap-3 cursor-pointer group"
           onMouseEnter={playHover}
           onClick={() => {
             playClick();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          <div className="w-12 h-12 rounded-full overflow-hidden liquid-glass relative border border-white/20">
+          <div className="w-12 h-12 rounded-full overflow-hidden liquid-glass relative">
             <Image 
               src="/portrait.png" 
-              alt="G. Prathyusha" 
+              alt="PUNNI Logo" 
               fill 
               priority
               className="object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-500" 
             />
           </div>
-          <div className="flex flex-col">
-            <span className="font-serif text-xl md:text-2xl tracking-wide text-white drop-shadow-md leading-tight">G. Prathyusha</span>
-            <span className="text-[10px] uppercase tracking-widest text-chalk/80">Clinical Psychology</span>
-          </div>
+          <span className="font-serif text-2xl tracking-widest text-white drop-shadow-md">PUNNI</span>
         </div>
       </div>
       
       <div className="pointer-events-auto hidden md:flex items-center gap-10">
         <a 
-          href="#expertise" 
-          aria-label="View our expertise and tiers"
-          className="text-sm tracking-widest text-chalk hover:text-white transition-colors drop-shadow uppercase"
+          href="#craft" 
+          aria-label="View our Craft and Engineering Tiers"
+          className="text-lg tracking-widest text-chalk hover:text-white transition-colors drop-shadow"
           onMouseEnter={playHover}
           onClick={playClick}
         >
-          Expertise
+          Craft
         </a>
         <a 
-          href="#interactive" 
-          aria-label="Assess your stress level"
-          className="text-sm tracking-widest text-chalk hover:text-white transition-colors drop-shadow uppercase"
+          href="#contact" 
+          aria-label="Initiate a project request"
+          className="px-8 py-3 rounded-full liquid-glass text-lg tracking-widest text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95 drop-shadow"
           onMouseEnter={playHover}
           onClick={playClick}
         >
-          Assess Stress
-        </a>
-        <a 
-          href="#results" 
-          aria-label="View client results"
-          className="text-sm tracking-widest text-chalk hover:text-white transition-colors drop-shadow uppercase"
-          onMouseEnter={playHover}
-          onClick={playClick}
-        >
-          Results
-        </a>
-        <a 
-          href="#booking" 
-          aria-label="Book your consultation"
-          className="px-8 py-3 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-sm tracking-widest text-white uppercase hover:bg-white/20 transition-all hover:scale-105 active:scale-95 drop-shadow shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-          onMouseEnter={playHover}
-          onClick={playClick}
-        >
-          Book Now
+          Initiate
         </a>
       </div>
     </motion.nav>
